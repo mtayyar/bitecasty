@@ -44,27 +44,66 @@ export const AudioPlayer = forwardRef<HTMLAudioElement, AudioPlayerProps>(
     useEffect(() => {
       if (audioRef.current) {
         if (isPlaying) {
-          audioRef.current.play().catch(error => {
-            console.error('Error playing audio:', error);
-          });
+          // Request audio focus for background playback
+          if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => {
+              audioRef.current?.play();
+              onPlayPause();
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+              audioRef.current?.pause();
+              onPlayPause();
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', onEnded);
+          }
+          
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error('Error playing audio:', error);
+              // If autoplay was prevented, we need to update the UI
+              if (error.name === 'NotAllowedError') {
+                onPlayPause(); // Toggle back to paused state in the UI
+              }
+            });
+          }
         } else {
           audioRef.current.pause();
         }
       }
-    }, [isPlaying, audioUrl]);
+    }, [isPlaying, onPlayPause]);
 
     // When audioUrl changes, reset the player and load the new audio
     useEffect(() => {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
         setCurrentTime(0);
-        if (isPlaying) {
-          audioRef.current.play().catch(error => {
-            console.error('Error playing audio:', error);
+        
+        // Set up media session metadata for the lock screen
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: 'BiteCasty Audio',
+            artist: 'BiteCasty User',
+            album: 'BiteCasty',
+            artwork: [
+              { src: '/icons/icon-512x512.svg', sizes: '512x512', type: 'image/svg+xml' }
+            ]
           });
         }
+        
+        if (isPlaying) {
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error('Error playing audio:', error);
+              if (error.name === 'NotAllowedError') {
+                onPlayPause(); // Toggle back to paused state in the UI
+              }
+            });
+          }
+        }
       }
-    }, [audioUrl, isPlaying]);
+    }, [audioUrl, isPlaying, onPlayPause]);
 
     const formatTime = (time: number) => {
       const minutes = Math.floor(time / 60);
@@ -81,7 +120,17 @@ export const AudioPlayer = forwardRef<HTMLAudioElement, AudioPlayerProps>(
 
     return (
       <div className="mt-4 space-y-2">
-        <audio ref={audioRef} src={audioUrl} preload="metadata" />
+        <audio 
+          ref={audioRef} 
+          src={audioUrl} 
+          preload="metadata"
+          playsInline 
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="true"
+          x5-video-orientation="portraint"
+        />
         
         <div className="flex items-center space-x-2">
           <Button 

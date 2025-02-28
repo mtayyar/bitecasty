@@ -63,6 +63,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Skip audio file requests to ensure they work in the background
+  if (event.request.url.includes('.mp3') || 
+      event.request.url.includes('.wav') || 
+      event.request.url.includes('.ogg') ||
+      event.request.url.includes('audio/')) {
+    return;
+  }
+  
   // Handle navigation requests
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -99,4 +107,11 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse || fetchPromise;
       })
   );
+});
+
+// Add a message event listener to keep the service worker alive
+self.addEventListener('message', (event) => {
+  if (event.data === 'keepalive') {
+    console.log('[Service Worker] Received keepalive message');
+  }
 }); 
