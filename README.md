@@ -32,7 +32,7 @@ BiteCasty is a Progressive Web App (PWA) for sharing and discovering audio conte
 
 1. Clone the repository
    ```
-   git clone https://github.com/yourusername/bitecasty.git
+   git clone https://github.com/mtayyar/bitecasty.git
    cd bitecasty
    ```
 
