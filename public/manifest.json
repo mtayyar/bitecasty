@@ -1,0 +1,44 @@
+{
+  "name": "BiteCasty",
+  "short_name": "BiteCasty",
+  "description": "Share and discover audio content",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#1e293b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-512x512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home Screen"
+    }
+  ],
+  "categories": ["social", "audio", "entertainment"],
+  "shortcuts": [
+    {
+      "name": "Create Post",
+      "short_name": "Create",
+      "description": "Create a new audio post",
+      "url": "/create",
+      "icons": [{ "src": "/icons/icon-512x512.svg", "sizes": "512x512" }]
+    },
+    {
+      "name": "Following Feed",
+      "short_name": "Following",
+      "description": "View posts from people you follow",
+      "url": "/following",
+      "icons": [{ "src": "/icons/icon-512x512.svg", "sizes": "512x512" }]
+    }
+  ]
+} 
